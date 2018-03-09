@@ -4,6 +4,89 @@ var imgmodel=require('../models/imgmodel');
 var path = require('path')
 var multer = require('multer');
 
+
+
+
+router.get('/:id?', function(req, res, next) {
+    if(req.params.id) {
+        imgmodel.selectOneImgs(req.params.id,function(err, rows){
+          if(err) {
+              res.json(err);
+          } else {
+              res.json(rows);
+          }
+        });
+    } else {
+        imgmodel.selectAllImgs(function(err, rows){
+          if(err) {
+              res.json(err);
+          } else {
+              res.json(rows);
+          }
+        });
+    }
+  });
+  
+
+  router.delete('/:id/:path',function(req,res,next){
+    console.log(req.params.path);
+
+    var fs = require('fs');
+    
+    fs.unlink("public/images/uploads/"+req.params.path, function (err) {
+        if (err) throw err;
+        // if no error, file has been deleted successfully
+        console.log('File deleted!');
+    }); 
+
+    imgmodel.deleteImg(req.params.id,function(err,count){
+
+        if(err)
+        {
+            res.json(err);
+        }
+        else{
+            res.json(count);
+        }
+    });
+});
+
+
+
+
+  /*router.delete('/:id',function(req,res,next){
+
+
+
+
+    imgmodel.deleteImg(req.params.id,function(err,count){
+
+        if(err)
+        {
+            res.json(err);
+        }
+        else{
+            res.json(count);
+        }
+    });
+});*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 var storage = multer.diskStorage({
     destination: (req, file, cb) => {
       cb(null, 'public/images/uploads')
